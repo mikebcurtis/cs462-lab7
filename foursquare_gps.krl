@@ -13,16 +13,21 @@ ruleset foursquare_gps {
 	}
 	global {
 	}
+	rule catch_checkin is active {
+		select when foursquare checkin
+		pre {
+			data = event:attr("checkin");
+		}
+		fired {
+			set ent:data data;
+		}
+	}
   
 	rule show_fs_location is active {
 		select when web cloudAppSelected
 		pre {
-
-			my_html = <<
-			        <h5>Venue: #{venue}</h5>
-			        <h5>City: #{city}</h5>
-			        <h5>Shout: #{shout}</h5>
-			        <h5>CreatedAt: #{createdAt}</h5>
+			my_html = ent:data ? ent:data | <<
+			        <h5>No data.</h5>
 			>>;
 		}
 		{
