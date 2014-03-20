@@ -26,9 +26,7 @@ ruleset foursquare_gps {
 	rule show_fs_location is active {
 		select when web cloudAppSelected
 		pre {
-			my_html = ent:data => ent:data | <<
-			        <h5>No data.</h5>
-			>>;
+			my_html = ent:data || "<h5>No data.</h5>";
 		}
 		{
 			SquareTag:inject_styling();
