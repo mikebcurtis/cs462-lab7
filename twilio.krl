@@ -11,4 +11,17 @@ ruleset twilio {
     use module a8x115 alias twilio with twiliokeys = keys:twilio()
     logging off
   }
+  
+  global {
+    to_phone = "8015104357";
+    from_phone = "3852091029";
+  }
+  
+  rule text_nearby is active {
+    select when explicit location_nearby
+    pre {
+      message = "Checkin nearby: " + event:attr("dist") + " miles.";
+    }
+    twilio:send_sms(to_phone, from_phone, message);
+  }
 }
