@@ -42,7 +42,6 @@ ruleset foursquare_gps {
 			raise explicit event location_nearby with dist = dist;
 		}
 		else {
-			send_directive("semantic_translation") with dist = dist;
 			raise explicit event location_far with dist = dist;	
 		}
 	}
