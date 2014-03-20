@@ -18,8 +18,8 @@ ruleset foursquare_gps {
 			
 			rlat1 = math:deg2rad(lat1);
 			rlng1 = math:deg2rad(lng1);
-			rlat2 = math:deg2rad(rlat2);
-			rlng2 = math:deg2rad(rlng2);
+			rlat2 = math:deg2rad(lat2);
+			rlng2 = math:deg2rad(lng2);
 			
 			math:great_circle_distance(rlng1, r90 - rlat1, rlng2, r90 - rlat2, radiusEarth);
 		};
