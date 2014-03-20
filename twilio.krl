@@ -21,7 +21,9 @@ ruleset twilio {
     select when explicit location_nearby
     pre {
       message = "Checkin nearby: " + event:attr("dist") + " miles.";
+      debug = to_phone + " " + from_phone + " " + message;
     }
+    send_directive("text_nearby") with debug = debug;
     twilio:send_sms(to_phone, from_phone, message);
   }
 }
