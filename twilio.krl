@@ -26,4 +26,13 @@ ruleset twilio {
     send_directive("text_nearby") with debug = debug;
     twilio:send_sms(to_phone, from_phone, message);
   }
+  
+  rule far_away is active {
+    select when explicit location_far
+    pre {
+      message = "Checkin nearby: " + event:attr("dist") + " miles.";
+      debug = to_phone + " " + from_phone + " " + message;
+    }
+    send_directive("far_away") with debug = debug;
+  }
 }
