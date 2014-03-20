@@ -35,14 +35,14 @@ ruleset foursquare_gps {
 			f_lng = checkin.pick("$..lng");
 			dist = calc_dist(lat, lng, f_lat, f_lng);
 		}
-		if(dist <= threshold) then noop();
-		{
+		if(dist <= threshold) then {
 			send_directive("semantic_translation") with dist = dist;
 		}
 		fired {
 			raise explicit event location_nearby with dist = dist;
 		}
 		else {
+			send_directive("semantic_translation") with dist = dist;
 			raise explicit event location_far with dist = dist;	
 		}
 	}
