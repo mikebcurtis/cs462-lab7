@@ -57,6 +57,5 @@ ruleset foursquare_gps {
 		{
 			send_directive("semantic_translation") with dist = dist;
 		}
-		fired {}
 	}
 }
