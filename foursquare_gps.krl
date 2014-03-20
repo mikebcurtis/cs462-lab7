@@ -25,7 +25,7 @@ ruleset foursquare_gps {
 		};
 	}
 	
-	rule nearby is active {
+	rule semantic_translation is active {
 		select when location new_current
 		pre {
 			lat = event:attr("lat");
@@ -39,21 +39,8 @@ ruleset foursquare_gps {
 		fired {
 			raise explicit event location_nearby with dist = dist;
 		}
+		else {
+			raise explicit event location_far with dist = dist;	
+		}
 	}
-	
-	rule far is active {
-		select when location new_current
-		pre {
-			lat = event:attr("lat");
-			lng = event:attr("lng");
-			checkin = LocationData:get_location_data("fs_checkin").decode();
-			f_lat = checkin.pick("$..lat");
-			f_lng = checkin.pick("$..lng");
-			dist = calc_dist(lat, lng, f_lat, f_lng);
-		}
-		if(dist > threshold) then noop();
-		fired {
-			raise explicit event location_far with dist = dist;
-		}
-	}	
 }
