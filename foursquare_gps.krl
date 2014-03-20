@@ -6,31 +6,54 @@ ruleset foursquare_gps {
 		>>
 		author "Mike Curtis"
 		logging off
-		use module a169x701 alias CloudRain
-		use module a41x186  alias SquareTag
+		use module b505198x5 alias LocationData
 	}
 	dispatch {
 	}
 	global {
+		threshold = 5;
+		calc_dist = function(lat1, lng1, lat2, lng2) {
+			r90 = math:pi()/2;
+			radiusEarth = 3959;
+			
+			rlat1 = math:deg2rad(lat1);
+			rlng1 = math:deg2rad(lng1);
+			rlat2 = math:deg2rad(rlat2);
+			rlng2 = math:deg2rad(rlng2);
+			
+			math:great_circle_distance(rlng1, r90 - rlat1, rlng2, r90 - rlat2, radiusEarth);
+		};
 	}
-	rule catch_checkin is active {
-		select when foursquare checkin
+	
+	rule nearby is active {
+		select when location new_current
 		pre {
-			data = event:attr("checkin");
+			lat = event:attr("lat");
+			lng = event:attr("lng");
+			checkin = LocationData:get_location_data("fs_checkin").decode();
+			f_lat = checkin.pick("$..lat");
+			f_lng = checkin.pick("$..lng");
+			dist = calc_dist(lat, lng, f_lat, f_lng);
 		}
+		if(dist <= threshold) then noop();
 		fired {
-			set ent:data data;
+			raise explicit event location_nearby with dist = dist;
 		}
 	}
-  
-	rule show_fs_location is active {
-		select when web cloudAppSelected
+	
+	rule far is active {
+		select when location new_current
 		pre {
-			my_html = ent:data || "<h5>No data.</h5>";
+			lat = event:attr("lat");
+			lng = event:attr("lng");
+			checkin = LocationData:get_location_data("fs_checkin").decode();
+			f_lat = checkin.pick("$..lat");
+			f_lng = checkin.pick("$..lng");
+			dist = calc_dist(lat, lng, f_lat, f_lng);
 		}
-		{
-			SquareTag:inject_styling();
-			CloudRain:createLoadPanel("CS 462 Lab 7: Semantic Translation", {}, my_html);
+		if(dist > threshold) then noop();
+		fired {
+			raise explicit event location_far with dist = dist;
 		}
-	}
+	}	
 }
