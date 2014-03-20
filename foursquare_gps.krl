@@ -42,8 +42,21 @@ ruleset foursquare_gps {
 		else {
 			raise explicit event location_far with dist = dist;	
 		}
-		always {
+	}
+	
+	rule debug is active {
+		select when location new_current
+		pre {
+			lat = event:attr("lat");
+			lng = event:attr("lng");
+			checkin = LocationData:get_location_data("fs_checkin").decode();
+			f_lat = checkin.pick("$..lat");
+			f_lng = checkin.pick("$..lng");
+			dist = calc_dist(lat, lng, f_lat, f_lng);
+		}
+		{
 			send_directive("semantic_translation") with dist = dist;
 		}
+		fired {}
 	}
 }
